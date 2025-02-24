@@ -45,8 +45,8 @@ for stock_id, file_path in enumerate(file_list, start=1):
     df = df.drop('Day',axis=1)
     stock_data_dict[stock_id] = df
 
-    # output_csv_path = os.path.join(output_folder, f"stock_{stock_id}.csv")
-    # df.to_csv(output_csv_path, index=True, encoding="utf-8-sig")
+    output_csv_path = os.path.join(output_folder, f"stock_{stock_id}.csv")
+    df.to_csv(output_csv_path, index=True, encoding="utf-8-sig")
 
 # Print a sample output to check
 print(f"Loaded {len(stock_data_dict)} stock files.")
