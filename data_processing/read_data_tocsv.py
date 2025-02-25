@@ -3,8 +3,10 @@ from glob import glob
 import pandas as pd
 
 # Define the correct folder path
-folder_path = "./HS300"  # Ensure this is correct
-output_folder = "./HS300_csv"
+folder_path = "./data/HS300/HS300"  # Ensure this is correct
+output_folder = "./data/HS300/HS300_csv"
+
+print("Folder exists:", os.path.exists(output_folder))
 
 # Get a sorted list of all .xlsx files in the folder
 file_list = sorted(glob(os.path.join(folder_path, "*.xlsx")))
@@ -20,7 +22,11 @@ expected_columns = [
 
 # Process each file and store it separately in the dictionary
 for stock_id, file_path in enumerate(file_list, start=1):
+    print(file_path)
     df = pd.read_excel(file_path)
+    file_name = os.path.basename(file_path)  # "000001.SZ"
+    ticker = os.path.splitext(file_name)[0]
+    print(ticker)
 
     # Ensure all expected columns exist
     df = df.reindex(columns=expected_columns, fill_value=pd.NA)
@@ -43,11 +49,13 @@ for stock_id, file_path in enumerate(file_list, start=1):
     # Store in dictionary with stock_id as the key
     df.index = df['Day']
     df = df.drop('Day',axis=1)
-    stock_data_dict[stock_id] = df
+    stock_data_dict[ticker] = df
 
-    output_csv_path = os.path.join(output_folder, f"stock_{stock_id}.csv")
+    output_csv_path = os.path.join(output_folder, f"{ticker}.csv")
     df.to_csv(output_csv_path, index=True, encoding="utf-8-sig")
+
 
 # Print a sample output to check
 print(f"Loaded {len(stock_data_dict)} stock files.")
-print(stock_data_dict[1].head())  # Show first stock's first rows
+print(stock_data_dict["000001.SZ"].head())  # Show first stock's first rows
+

@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 
 # Define paths
-folder_path = "./HS300_csv"  # Change this to your actual folder
-save_dir = "./HS300DS"  # Ensure this directory exists
+folder_path = "./data/HS300/HS300_csv"  # Change this to your actual folder
+save_dir = "./data/HS300/HS300DS"  # Ensure this directory exists
 npy_file_path = os.path.join(save_dir, "stocks_data.npy")
 
 # Create the directory if it does not exist

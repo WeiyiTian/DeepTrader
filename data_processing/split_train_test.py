@@ -4,10 +4,10 @@ from glob import glob
 import numpy as np
 
 # Define paths
-input_folder = "./HS300_csv"  # Folder containing stock CSV files
-train_output_folder = "./HS300_train"
-test_output_folder = "./HS300_test"
-save_dir = "./HS300DS"  # Ensure this directory exists
+input_folder = "./data/HS300/HS300_csv"  # Folder containing stock CSV files
+train_output_folder = "./data/HS300/HS300_train"
+test_output_folder = "./data/HS300/HS300_test"
+save_dir = "./data/HS300/HS300DS"  # Ensure this directory exists
 npy_train_path = os.path.join(save_dir, "stocks_train_data.npy")
 npy_test_path = os.path.join(save_dir, "stocks_test_data.npy")
 
@@ -40,17 +40,53 @@ for file_path in file_list:
     
     if df['Day'][0] <= train_start:
         train_df = df[(df["Day"] >= train_start) & (df["Day"] <= train_end)]
+
+
+        invalid_entries = train_df['Volume'].map(lambda x: x == 0.0).sum().sum()
+        if invalid_entries > 190:
+            print(f"Found {invalid_entries} invalid values (0.0 volume) in {file_path} training.")
+            continue
+
+        train_df.iloc[:, -2:] = (
+                                train_df.iloc[:, -2:]
+                                .replace(0.0, pd.NA)  # Replace 0.0 with NA to avoid filling unwanted zeros
+                                .apply(pd.to_numeric, errors='coerce') 
+                                .ffill()  # Forward fill
+                                .infer_objects(copy=False)  # Ensure correct dtype inference
+                            )
+
         train_df.to_csv(os.path.join(train_output_folder, f"{stock_name}_train.csv"), index=False, encoding="utf-8-sig")
-        train_data_array = train_df.to_numpy()
+        # train_data_array = train_df.to_numpy()
+        train_data_array = train_df.drop("Day", axis = 1).to_numpy()
+
         all_train_data .append(train_data_array)
+
     if df['Day'][0] <= test_start:
         test_df = df[(df["Day"] >= test_start) & (df["Day"] <= test_end)]
+
+        invalid_entries = test_df['Volume'].map(lambda x: x == 0.0).sum().sum()
+        if invalid_entries > 170:
+            print(f"Found {invalid_entries} invalid values (0.0 volume) in {file_path} testing.")
+            continue
+
+        test_df.iloc[:, -2:] = (
+                                test_df.iloc[:, -2:]
+                                .replace(0.0, pd.NA)  # Replace 0.0 with NA to avoid filling unwanted zeros
+                                .apply(pd.to_numeric, errors='coerce') 
+                                .ffill()  # Forward fill
+                                .infer_objects(copy=False)  # Ensure correct dtype inference
+                            )
         test_df.to_csv(os.path.join(test_output_folder, f"{stock_name}_test.csv"), index=False, encoding="utf-8-sig")
-        test_data_array = test_df.to_numpy()
+        # test_data_array = test_df.to_numpy()
+        test_data_array = test_df.drop("Day", axis = 1).to_numpy()
+
         all_test_data.append(test_data_array)
 
-    stocks_train_data = np.array(all_train_data, dtype=object)  # Use dtype=object for variable-sized arrays
-    stocks_test_data = np.array(all_test_data, dtype=object) 
+stocks_train_data = np.array(all_train_data, dtype=object)  # Use dtype=object for variable-sized arrays
+stocks_test_data = np.array(all_test_data, dtype=object) 
+
+print(stocks_train_data.shape)
+print(stocks_test_data.shape)
 
 # Save the file
 np.save(npy_train_path, stocks_train_data)
