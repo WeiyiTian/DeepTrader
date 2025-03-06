@@ -12,7 +12,7 @@
     "tau": 0.001,
     "batch_size": 37,
     "use_gpu": true,
-    "addaptiveadj":true,
+    "addaptiveadj": true,
     "trade_mode": "M",
     "fee": 0.001,
     "theta": 0.15,
@@ -33,5 +33,10 @@
     "market": "CSI100",
     "device": "cuda",
     "relation_file": "industry_classification.npy",
-    "trade_len": 21
+    "trade_len": 21,
+    "config": "src/hyper.json",
+    "seed": -1,
+    "spatial_bool": true,
+    "msu_bool": false,
+    "addaptive_adj_bool": true
 }

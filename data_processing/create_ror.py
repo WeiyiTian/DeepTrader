@@ -21,7 +21,7 @@ adj_return = np.hstack((first_day, daily_return))
 
 print(adj_return.shape)
 
-ror_path = "./data/DOW30/dow30_ds/ror_stock.npy"
+ror_path = "./data/HS300/HS300DS/ror_stock.npy"
 
 np.save(ror_path, adj_return)
 
