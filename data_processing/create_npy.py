@@ -4,12 +4,12 @@ from glob import glob
 import numpy as np
 
 # Define paths
-input_folder = "./data/HS300/market"  # Folder containing stock CSV files
+input_folder = "./data/DOW30/market"  # Folder containing stock CSV files
 
-save_dir = "./data/HS300/HS300DS"  # Ensure this directory exists
+save_dir = "./data/DOW30/dow30_ds"  # Ensure this directory exists
 npy_path = os.path.join(save_dir, "market_data.npy")
 
-start = pd.Timestamp("2005-01-01")
+start = pd.Timestamp("1992-01-02")
 end = pd.Timestamp("2019-12-31")
 all_data = []
 
@@ -32,7 +32,7 @@ for file_path in file_list:
     if df['Day'][0] <= start:
         train_df = df[(df["Day"] >= start) & (df["Day"] <= end)]
 
-
+        '''
         invalid_entries = train_df['Volume'].map(lambda x: x == 0.0).sum().sum()
         if invalid_entries > 300:
             #print(f"Found {invalid_entries} invalid values (0.0 volume) in {file_path} training.")
@@ -44,10 +44,10 @@ for file_path in file_list:
                                 .apply(pd.to_numeric, errors='coerce') 
                                 .ffill()  # Forward fill
                                 .infer_objects(copy=False))  # Ensure correct dtype inferenc)
-
+        '''
 
         data_array = train_df.drop("Day", axis = 1).to_numpy()
-
+        print(data_array.shape)
         all_data.append(data_array)
 
 
