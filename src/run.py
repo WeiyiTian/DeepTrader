@@ -62,12 +62,13 @@ def run(func_args):
         logger.addHandler(fhlr)
 
         if func_args.market == 'DJIA':
-            stocks_data = np.load(data_prefix + 'stocks_data.npy')
-            rate_of_return = np.load( data_prefix + 'ror.npy')
-            market_history = np.load(data_prefix + 'market_data.npy')
+            stocks_data = np.load(data_prefix + 'stocks_data.npy', allow_pickle=True)
+            rate_of_return = np.load( data_prefix + 'ror.npy', allow_pickle=True)
+            market_history = np.load(data_prefix + 'market_data.npy', allow_pickle=True)
             assert stocks_data.shape[:-1] == rate_of_return.shape, 'file size error'
-            A = torch.from_numpy(np.load(matrix_path)).float().to(func_args.device)
-            test_idx = 7328
+            # A = torch.from_numpy(np.load(matrix_path)).float().to(func_args.device)
+            # test_idx = 7328
+            test_idx = 4702
             allow_short = True
         elif func_args.market == 'HSI':
             stocks_data = np.load(data_prefix + 'stocks_data.npy')
@@ -79,8 +80,8 @@ def run(func_args):
             allow_short = True
 
         elif func_args.market == 'CSI100':
-            stocks_data = np.load(data_prefix + 'stocks_data.npy')
-            rate_of_return = np.load(data_prefix + 'ror.npy')
+            stocks_data = np.load(data_prefix + 'stocks_data.npy', allow_pickle=True)
+            rate_of_return = np.load(data_prefix + 'ror.npy', allow_pickle=True)
             A = torch.from_numpy(np.load(matrix_path)).float().to(func_args.device)
             test_idx = 1944
             market_history = None
@@ -92,7 +93,7 @@ def run(func_args):
                            max_steps=func_args.max_steps, mode=func_args.mode, norm_type=func_args.norm_type,
                            allow_short=allow_short)
 
-        supports = [A]
+        supports = None
         actor = RLActor(supports, func_args).to(func_args.device)
         agent = RLAgent(env, actor, func_args)
 
@@ -120,6 +121,8 @@ def run(func_args):
                     print('New Best CR Policy!!!!')
                     max_cr = metrics['CR']
                     torch.save(actor, os.path.join(model_save_dir, 'best_cr-'+str(epoch)+'.pkl'))
+                    np.save("./data/agent_wealth_CSI.npy", agent_wealth)
+                    print("./data/agent_wealth_CSI.npy")
                 logger.warning('after training %d round, max wealth: %.4f, min wealth: %.4f,'
                                ' avg wealth: %.4f, final wealth: %.4f, ARR: %.3f%%, ASR: %.3f, AVol" %.3f,'
                                'MDD: %.2f%%, CR: %.3f, DDR: %.3f'

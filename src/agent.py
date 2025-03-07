@@ -118,7 +118,6 @@ class RLAgent():
             ror = torch.from_numpy(self.env.ror).to(self.args.device)
             normed_ror = (ror - torch.mean(ror, dim=-1, keepdim=True)) / \
                          torch.std(ror, dim=-1, keepdim=True)
-
             next_states, rewards, rho_labels, masks, done, info = \
                 self.env.step(weights, rho.detach().cpu().numpy())
 
@@ -126,7 +125,7 @@ class RLAgent():
             steps_reward_total.append(rewards.total - info['market_avg_return'])
 
             asu_grad = torch.sum(normed_ror * scores_p, dim=-1)
-            steps_asu_grad.append(torch.log(asu_grad))
+            steps_asu_grad.append(torch.log(torch.clamp(asu_grad, min=1e-8)))
 
             agent_wealth = np.concatenate((agent_wealth, info['total_value'][..., None]), axis=1)
             states = next_states
