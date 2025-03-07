@@ -1,6 +1,6 @@
 {
-    "lr": 1e-06,
-    "hidden_dim": 128,
+    "lr": 1e-04,
+    "hidden_dim": 256,
     "num_blocks": 4,
     "kernel_size": 2,
     "gcn_bool": true,
@@ -10,7 +10,7 @@
     "max_steps": 12,
     "gamma": 0.05,
     "tau": 0.001,
-    "batch_size": 37,
+    "batch_size": 16,
     "use_gpu": true,
     "addaptiveadj":true,
     "trade_mode": "M",
